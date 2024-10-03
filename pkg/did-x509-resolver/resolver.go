@@ -40,7 +40,6 @@ func VerifyCertificateChain(chain []*x509.Certificate, trustedRoots []*x509.Cert
 }
 
 func checkFingerprint(chain []*x509.Certificate, caFingerprintAlg, caFingerprint string) error {
-
 	expectedCaFingerprints := make(map[string]struct{})
 	for _, cert := range chain[1:] {
 		var n struct{}
@@ -174,13 +173,13 @@ func OidFromExtKeyUsage(eku x509.ExtKeyUsage) (oid asn1.ObjectIdentifier, ok boo
 
 // check that the did "did" matches the public cert chain "chain"
 func verifyDid(chain []*x509.Certificate, did string) error {
-	var topTokens = strings.Split(did, "::")
+	topTokens := strings.Split(did, "::")
 
 	if len(topTokens) <= 1 {
 		return errors.New("invalid DID string")
 	}
 
-	var pretokens = strings.Split(topTokens[0], ":")
+	pretokens := strings.Split(topTokens[0], ":")
 
 	if len(pretokens) < 5 || pretokens[0] != "did" || pretokens[1] != "x509" {
 		return errors.New("unsupported method/prefix")
@@ -228,7 +227,6 @@ func verifyDid(chain []*x509.Certificate, did string) error {
 			for i := 0; i < len(args); i += 2 {
 				k := strings.ToUpper(args[i])
 				v, err := url.QueryUnescape(args[i+1])
-
 				if err != nil {
 					return fmt.Errorf("urlUnescape failed: %w", err)
 				}
@@ -405,7 +403,7 @@ func createDidDocument(did string, chain []*x509.Certificate) (string, error) {
 }
 
 func parsePemChain(chainPem string) ([]*x509.Certificate, error) {
-	var chain = []*x509.Certificate{}
+	chain := []*x509.Certificate{}
 
 	bs := []byte(chainPem)
 	for block, rest := pem.Decode(bs); block != nil; block, rest = pem.Decode(rest) {
@@ -423,7 +421,6 @@ func parsePemChain(chainPem string) ([]*x509.Certificate, error) {
 
 func Resolve(chainPem string, did string, ignoreTime bool) (string, error) {
 	chain, err := parsePemChain(chainPem)
-
 	if err != nil {
 		return "", err
 	}
@@ -436,7 +433,6 @@ func Resolve(chainPem string, did string, ignoreTime bool) (string, error) {
 	roots := []*x509.Certificate{chain[len(chain)-1]}
 
 	chains, err := VerifyCertificateChain(chain, roots, ignoreTime)
-
 	if err != nil {
 		return "", fmt.Errorf("certificate chain verification failed: %w", err)
 	}
@@ -449,7 +445,6 @@ func Resolve(chainPem string, did string, ignoreTime bool) (string, error) {
 	}
 
 	doc, err := createDidDocument(did, chain)
-
 	if err != nil {
 		return "", fmt.Errorf("DID document creation failed: %w", err)
 	}
