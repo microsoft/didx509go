@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/v2/jwk"
 )
 
 func VerifyCertificateChain(chain []*x509.Certificate, trustedRoots []*x509.Certificate, ignoreTime bool) ([][]*x509.Certificate, error) {
@@ -392,7 +392,7 @@ func createDidDocument(did string, chain []*x509.Certificate) (string, error) {
 		ka = fmt.Sprintf(",\"keyAgreement\": \"%s#key-1\"", did)
 	}
 
-	leaf, err := jwk.New(chain[0].PublicKey)
+	leaf, err := jwk.FromRaw(chain[0].PublicKey)
 	if err != nil {
 		return "", err
 	}
